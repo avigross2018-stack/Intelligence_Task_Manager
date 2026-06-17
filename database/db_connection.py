@@ -1,5 +1,5 @@
 import mysql.connector
-from exceptions import FailedConnectionSql
+from utils.exceptions import FailedConnectionSql
 
 
 class DBConnector:

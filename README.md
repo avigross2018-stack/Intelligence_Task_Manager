@@ -13,8 +13,10 @@ intelligence-task-manager/
 │   ├── db_connection.py
 │   ├── agent_db.py
 │   └── mission_db.py
+├── utils/
+|   ├── exceptions.py
+|   ├── models.py
 ├── README.md
-├── exceptions.py
 ├── requirements.txt
 └── .gitignore
 
@@ -25,17 +27,17 @@ intelligence-task-manager/
 
 ### missions
 
-| name              | type                                                                                 | description                                                                                    |
-| ----------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| id                | INT                                                                                  | auto_increment, PK                                                                             |
-| title             | VARCHAR(30) NOT NULL                                                                 | mission title                                                                                  |
-| description       | TEXT NOT NULL                                                                        | mission description                                                                            |
-| location          | VARCHAR(30) NOT NULL                                                                 | mission location                                                                               |
-| difficulty        | INT NOT NULL                                                                         | 1-10                                                                                           |
-| importance        | INT  NOT NULL                                                                       | 1-10                                                                                           |
-| status            | ENUM(NEW, ASSINGED, IN_PROGRESS,<br />COMPLETE, FAILED, CANCELLED),<br />DEFAULT NEW |                                                                                                |
+| name              | type                                                                                 | description                                                                              |
+| ----------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| id                | INT                                                                                  | auto_increment, PK                                                                       |
+| title             | VARCHAR(30) NOT NULL                                                                 | mission title                                                                            |
+| description       | TEXT NOT NULL                                                                        | mission description                                                                      |
+| location          | VARCHAR(30) NOT NULL                                                                 | mission location                                                                         |
+| difficulty        | INT NOT NULL                                                                         | 1-10                                                                                     |
+| importance        | INT  NOT NULL                                                                        | 1-10                                                                                     |
+| status            | ENUM(NEW, ASSINGED, IN_PROGRESS,<br />COMPLETE, FAILED, CANCELLED),<br />DEFAULT NEW |                                                                                          |
 | risk_level        | ENUM(LOW, MEDIUM, HIGH, CRITICAL)                                                    | not from user,<br />auto calculation,<br />**difficulty \* 2 + importance = risk_level** |
-| assigned_agent_id | INT DEFAULT NULL                                                                     |                                                                                                |
+| assigned_agent_id | INT DEFAULT NULL                                                                     |                                                                                          |
 
 ### agents
 
