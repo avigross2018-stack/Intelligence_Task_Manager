@@ -32,3 +32,34 @@ class DBConnector:
         cur.close()
         con.close()
 
+    def create_tables(self):
+        con = self.get_connection
+        cur = con.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXIST agents (
+                    id                  INT AUTO_INCREMENT PRIMARY KEY,
+                    name                VARCHAR(50) NOT NULL,
+                    specialty           VARCHAR(50) NOT NULL,
+                    is_active           BOOLEAN DEFAULT TRUE,
+                    completed_missions  INT DEFAULT 0,
+                    failed_missions     INT DEFAULT 0,
+                    agent_rank          ENUM(Junior, Senior, Commander)
+                    )
+        """)
+
+        cur.execute("""
+            CREATE TABLE IF NOT EXIST missions (
+                    id                  INT AUTO_INCREMENT PRIMARY KEY,
+                    title               VARCHAR(30) NOT NULL,
+                    description         TEXT NOT NULL,
+                    location            VARCHAR(30) NOT NULL,
+                    difficulty          INT(10) NOT NULL,
+                    importance          INT(10) NOT NULL,
+                    status              ENUM(NEW, ASSIGNED, IN_PROGRESS, COMPLETE, FAILED, CANCELLED) DEFAULT NEW,
+                    risk_level          ENUM(LOW, MEDIUM, HIGH, CRITICAL),
+                    assigned_agent_id   INT DEFAULT NULL
+                    )
+        """)
+        con.commit()
+        cur.close()
+        con.close()
