@@ -7,7 +7,6 @@ class DBConnector:
     
 
     def __init__(self):
-        self.create_database()
         self.host = "localhost"
         self.port = 3320
         self.user = "root"
@@ -23,21 +22,26 @@ class DBConnector:
                 password=self.password,
                 database=self.database
             )
-        except Exception:
-            raise FailedConnectionSql
+        except Exception as e:
+            raise FailedConnectionSql(str(e))
 
     def create_database(self):
-        con = self.get_connection()
+        con = mysql.connector.connect(
+                host=self.host,
+                port=self.port,
+                user=self.user,
+                password=self.password
+            )
         cur = con.cursor()
         cur.execute("""
-            CREATE DATABASE IF NOT EXIST Intelligence_db
+            CREATE DATABASE IF NOT EXISTS Intelligence_db
         """)
         con.commit()
         cur.close()
         con.close()
 
     def create_tables(self):
-        con = self.get_connection
+        con = self.get_connection()
         cur = con.cursor()
         cur.execute("""
             CREATE TABLE IF NOT EXISTS agents (
@@ -47,7 +51,7 @@ class DBConnector:
                     is_active           BOOLEAN DEFAULT TRUE,
                     completed_missions  INT DEFAULT 0,
                     failed_missions     INT DEFAULT 0,
-                    agent_rank          ENUM(Junior, Senior, Commander)
+                    agent_rank          ENUM('Junior', 'Senior', 'Commander')
                     )
         """)
 
@@ -59,8 +63,8 @@ class DBConnector:
                     location            VARCHAR(30) NOT NULL,
                     difficulty          INT(10) NOT NULL,
                     importance          INT(10) NOT NULL,
-                    status              ENUM(NEW, ASSIGNED, IN_PROGRESS, COMPLETE, FAILED, CANCELLED) DEFAULT NEW,
-                    risk_level          ENUM(LOW, MEDIUM, HIGH, CRITICAL),
+                    status              ENUM('NEW', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'FAILED', 'CANCELLED') DEFAULT 'NEW',
+                    risk_level          ENUM('LOW', 'MEDIUM', 'HIGH', 'CRITICAL'),
                     assigned_agent_id   INT DEFAULT NULL
                     )
         """)

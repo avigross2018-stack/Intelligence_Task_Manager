@@ -6,6 +6,8 @@ from utils.exceptions import DataNotExist
 class AgentDB:
 
     db = DBConnector()
+    db.create_database()
+    db.create_tables()
 
     def get_all_agents(self) -> list:
         con = self.db.get_connection()
@@ -24,10 +26,8 @@ class AgentDB:
         cur = con.cursor()
         cur.execute("""
             INSERT INTO agents (name, specialty, is_active, completed_missions,
-                    failed_missions, agent_rank) VALUES (
-                    %s, %s, %s, %s, %s, %s)
-        """, tuple(data.name, data.specialty, data.is_active, data.completed_missions,
-                   data.failed_missions, data.agent_rank))
+                    failed_missions, agent_rank) VALUES (%s, %s, %s, %s, %s, %s)
+        """, (data.name, data.specialty, data.is_active, data.completed_missions, data.failed_missions, data.agent_rank))
         con.commit()
         change = cur.rowcount > 0
         agent_id = cur.lastrowid
@@ -76,24 +76,96 @@ class AgentDB:
         con = self.db.get_connection()
         cur = con.cursor(dictionary=True)
         cur.execute("""
-            UPDATE agents SET (is_active = FALSE WHERE id = %s)
+            UPDATE agents SET is_active = FALSE WHERE id = %s
         """, (agent_id,))
         con.commit()
         change = cur.rowcount > 0
         cur.close()
         con.close()
         if change:
-            return {"message": f"agent {agent_id} is not active."}
+            return {"message": f"agent {agent_id} is deactivate."}
         return {"message": f"Failed to deactivate agent {agent_id}."}
 
 
     def increment_completed(self, agent_id: int) -> dict:
-        pass
+        con = self.db.get_connection()
+        cur = con.cursor(dictionary=True)
+        cur.execute("""
+            SELECT COUNT(*) AS total FROM missions WHERE status = 'COMPLETED'
+                     AND assigned_agent_id = %s
+        """, (agent_id,))
+
+        data = cur.fetchone()
+
+        cur.execute('''
+                UPDATE agents SET completed_missions = %s WHERE id = %s
+            ''', tuple(data["total"], agent_id))
+        
+        con.commit()
+        cur.close()
+        con.close()
+
+
+    def increment_failed(self, agent_id: int) -> dict:
+        con = self.db.get_connection()
+        cur = con.cursor(dictionary=True)
+        cur.execute("""
+            SELECT COUNT(*) AS total FROM missions WHERE status = 'FAILED'
+                     AND assigned_agent_id = %s
+        """, (agent_id,))
+
+        data = cur.fetchone()
+
+        cur.execute('''
+                UPDATE agents SET failed_missions = %s WHERE id = %s
+            ''', tuple(data["total"], agent_id))
+        
+        con.commit()
+        cur.close()
+        con.close()
 
 
     def get_agent_performance(self, agent_id: int) -> dict:
-        pass
+        con = self.db.get_connection()
+        cur = con.cursor(dictionary=True)
+
+        cur.execute("""
+            SELECT COUNT(*) AS total FROM missions WHERE id = %s
+        """, (agent_id,))
+        total = cur.fetchone()["total"]
+
+        cur.execute("""
+            SELECT completed_missions FROM agents WHERE id = %s 
+        """, (agent_id,))
+        completed = cur.fetchone()["completed_missions"]
+
+        cur.execute("""
+            SELECT failed_missions FROM agents WHERE id = %s 
+        """, (agent_id,))
+        failed = cur.fetchone()["failed_missions"]
+        
+        try:
+            success_rate = 100 / total * completed
+        except ZeroDivisionError:
+            success_rate = 0
+
+        cur.close()
+        con.close()
+        return {
+            "total": total,
+            "completed": completed,
+            "failed": failed,
+            "success_rate": success_rate
+        }
 
 
     def count_active_agents(self) -> dict:
-        pass
+        con = self.db.get_connection()
+        cur = con.cursor(dictionary=True)
+        cur.execute("""
+            SELECT COUNT(*) AS amount_of_active_agents FROM agents WHERE is_active = TRUE
+        """)
+        data = cur.fetchone()
+        cur.close()
+        con.close()
+        return data
