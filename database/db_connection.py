@@ -22,3 +22,13 @@ class DBConnector:
         except Exception:
             raise FailedConnectionSql
 
+    def create_database(self):
+        con = self.get_connection()
+        cur = con.cursor()
+        cur.execute("""
+            CREATE DATABASE IF NOT EXIST Intelligence_db
+        """)
+        con.commit()
+        cur.close()
+        con.close()
+
