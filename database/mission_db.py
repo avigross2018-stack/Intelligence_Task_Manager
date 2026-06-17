@@ -92,28 +92,78 @@ class MissionDB:
         return {"message": f"could not update status {status} to mission {m_id}"}
 
 
-    def get_open_missions_by_agent(self, id):
-        pass
+    def get_open_missions_by_agent(self, a_id: int):
+        con = self.db.get_connection()
+        cur = con.cursor(dictionary=True)
+        cur.execute("""
+            SELECT * FROM missions WHERE assigned_agent_id = %s AND (
+                    status = 'ASSIGNED' OR status = 'IN_PROGRESS') 
+        """, (a_id,))
+        data = cur.fetchall()
+        cur.close()
+        con.close()
+        return data
 
 
     def count_all_missions(self):
-        pass
+        con = self.db.get_connection()
+        cur = con.cursor(dictionary=True)
+        cur.execute("""
+            SELECT COUNT(*) AS total_missions FROM missions
+        """)
+        data = cur.fetchone()
+        cur.close()
+        con.close()
+        return data
 
 
-    def count_by_status(self, status):
-        pass
+    def count_by_status(self, status: str):
+        con = self.db.get_connection()
+        cur = con.cursor(dictionary=True)
+        cur.execute("""
+            SELECT COUNT(*) AS status_count FROM missions WHERE status = %s
+        """, (status,))
+        data = cur.fetchone()
+        cur.close()
+        con.close()
+        return data
 
 
     def count_open_missions(self):
-        pass
+        con = self.db.get_connection()
+        cur = con.cursor(dictionary=True)
+        cur.execute("""
+            SELECT COUNT(*) AS open_missions FROM missions 
+                    WHERE status = 'ASSIGNED' OR status = 'IN_PROGRESS'
+        """)
+        data = cur.fetchone()
+        cur.close()
+        con.close()
+        return data
 
 
     def count_critical_missions(self):
-        pass
+        con = self.db.get_connection()
+        cur = con.cursor(dictionary=True)
+        cur.execute("""
+            SELECT COUNT(*) AS critical_missions FROM missions WHERE status = 'CRITICAL'
+        """)
+        data = cur.fetchone()
+        cur.close()
+        con.close()
+        return data
 
 
     def get_top_agent(self):
-        pass
+        con = self.db.get_connection()
+        cur = con.cursor(dictionary=True)
+        cur.execute("""
+            SELECT completed_missions, FROM agents ORDER BY DESC LIMIT 1
+        """)
+        data = cur.fetchone()
+        cur.close()
+        con.close()
+        return data
 
 
     def calc_risk_level(self, difficulty: int, importance: int):
