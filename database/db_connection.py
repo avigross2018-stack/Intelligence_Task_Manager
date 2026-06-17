@@ -3,7 +3,11 @@ from utils.exceptions import FailedConnectionSql
 
 
 class DBConnector:
+
+    
+
     def __init__(self):
+        self.create_database()
         self.host = "localhost"
         self.port = 3320
         self.user = "root"
@@ -36,7 +40,7 @@ class DBConnector:
         con = self.get_connection
         cur = con.cursor()
         cur.execute("""
-            CREATE TABLE IF NOT EXIST agents (
+            CREATE TABLE IF NOT EXISTS agents (
                     id                  INT AUTO_INCREMENT PRIMARY KEY,
                     name                VARCHAR(50) NOT NULL,
                     specialty           VARCHAR(50) NOT NULL,
@@ -48,7 +52,7 @@ class DBConnector:
         """)
 
         cur.execute("""
-            CREATE TABLE IF NOT EXIST missions (
+            CREATE TABLE IF NOT EXISTS missions (
                     id                  INT AUTO_INCREMENT PRIMARY KEY,
                     title               VARCHAR(30) NOT NULL,
                     description         TEXT NOT NULL,
