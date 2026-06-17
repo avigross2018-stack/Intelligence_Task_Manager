@@ -1,7 +1,7 @@
+from database.mission_db import MissionDB
+from utils.models import CreateAgent, CreateMission
 from database.agent_db import AgentDB
-from utils.models import CreateAgent
-
-a = CreateAgent(name="bbb", specialty="run", agent_rank="Junior")
-print(a.__str__())
-agent = AgentDB()
-print(agent.update_agent(1, {"name": "ccc"}))
+m = CreateMission(title="bbb", description="ccc", location="US", difficulty=7, importance=5, assigned_agent_id=2)
+mission = MissionDB()
+a = AgentDB()
+print(a.increment_completed(2))

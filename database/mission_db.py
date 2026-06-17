@@ -40,7 +40,7 @@ class MissionDB:
         cur.execute("""
             INSERT INTO missions (title, description, location, difficulty,
                     importance, status, risk_level, assigned_agent_id) VALUES (
-                    %s, %s, %s, %s, %s, %s, %s)
+                    %s, %s, %s, %s, %s, %s, %s, %s)
         """, (data.title, data.description, data.location, data. difficulty,
               data.importance, data.status, risk_level, data.assigned_agent_id))
         con.commit()

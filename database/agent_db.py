@@ -118,7 +118,7 @@ class AgentDB:
 
         cur.execute('''
                 UPDATE agents SET failed_missions = %s WHERE id = %s
-            ''', tuple(data["total"], agent_id))
+            ''', (data["total"], agent_id))
         
         con.commit()
         cur.close()

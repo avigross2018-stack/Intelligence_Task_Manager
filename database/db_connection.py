@@ -61,8 +61,8 @@ class DBConnector:
                     title               VARCHAR(30) NOT NULL,
                     description         TEXT NOT NULL,
                     location            VARCHAR(30) NOT NULL,
-                    difficulty          INT(10) NOT NULL,
-                    importance          INT(10) NOT NULL,
+                    difficulty          INT NOT NULL,
+                    importance          INT NOT NULL,
                     status              ENUM('NEW', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'FAILED', 'CANCELLED') DEFAULT 'NEW',
                     risk_level          ENUM('LOW', 'MEDIUM', 'HIGH', 'CRITICAL'),
                     assigned_agent_id   INT DEFAULT NULL
