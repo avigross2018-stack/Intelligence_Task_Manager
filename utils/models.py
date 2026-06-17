@@ -11,7 +11,12 @@ class CreateAgent(BaseModel):
     agent_rank:Literal["Junior", "Senior", "Commander"]
 
 class UpdateAgent(BaseModel):
-    pass
+    name:str | None = None
+    specialty:str | None = None
+    is_active:bool | None = None
+    completed_missions:int | None = None
+    failed_missions:int | None = None
+    agent_rank:Literal["Junior", "Senior", "Commander"] | None = None
 
 
 class CreateMission(BaseModel):
