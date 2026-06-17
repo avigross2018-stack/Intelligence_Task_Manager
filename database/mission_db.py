@@ -77,8 +77,19 @@ class MissionDB:
         return {"message": f"Failed to assigned mission {m_id}"}
 
 
-    def update_mission_status(self, id, status):
-        pass
+    def update_mission_status(self, m_id: int, status: str):
+        con = self.db.get_connection()
+        cur = con.cursor(dictionary=True)
+        cur.execute("""
+            UPDATE missions SET status = %s WHERE id = %s
+        """, (status, m_id))
+        con.commit()
+        change = cur.rowcount > 0
+        cur.close()
+        con.close()
+        if change:
+            return {"message": f"update status {status} to mission {m_id}"}
+        return {"message": f"could not update status {status} to mission {m_id}"}
 
 
     def get_open_missions_by_agent(self, id):
