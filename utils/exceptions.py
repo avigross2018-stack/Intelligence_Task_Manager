@@ -18,3 +18,8 @@ class InvalidAmount(Exception):
     raise when user enter invalid amount (>10 | < 0)
     '''
     pass
+
+class DataNotExist(Exception):
+    '''
+    raise when user search or try to change data that does bot exist
+    '''
