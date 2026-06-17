@@ -20,7 +20,13 @@ class UpdateAgent(BaseModel):
 
 
 class CreateMission(BaseModel):
-    pass
+    title:str
+    description:str
+    location:str
+    difficulty:int
+    importance:int
+    status:Literal['NEW', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETE', 'FAILED', 'CANCELLED']
+    assigned_agent_id:int | None = None
 
 class UpdateMission(BaseModel):
     pass
