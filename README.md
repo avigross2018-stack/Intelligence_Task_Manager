@@ -20,6 +20,8 @@ intelligence-task-manager/
 │    ├── agent_routes.py
 │    ├── mission_routes.py
 │    └── report_routes.py
+├── logs/
+│   └── app.log
 ├── README.md
 ├── requirements.txt
 └── .gitignore
@@ -31,17 +33,17 @@ intelligence-task-manager/
 
 ### missions
 
-| name              | type                                                                                 | description                                                                              |
-| ----------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| id                | INT                                                                                  | auto_increment, PK                                                                       |
-| title             | VARCHAR(30) NOT NULL                                                                 | mission title                                                                            |
-| description       | TEXT NOT NULL                                                                        | mission description                                                                      |
-| location          | VARCHAR(30) NOT NULL                                                                 | mission location                                                                         |
-| difficulty        | INT NOT NULL                                                                         | 1-10                                                                                     |
-| importance        | INT  NOT NULL                                                                        | 1-10                                                                                     |
-| status            | ENUM(NEW, ASSINGED, IN_PROGRESS,<br />COMPLETE, FAILED, CANCELLED),<br />DEFAULT NEW |                                                                                          |
+| name              | type                                                                                 | description                                                                                    |
+| ----------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| id                | INT                                                                                  | auto_increment, PK                                                                             |
+| title             | VARCHAR(30) NOT NULL                                                                 | mission title                                                                                  |
+| description       | TEXT NOT NULL                                                                        | mission description                                                                            |
+| location          | VARCHAR(30) NOT NULL                                                                 | mission location                                                                               |
+| difficulty        | INT NOT NULL                                                                         | 1-10                                                                                           |
+| importance        | INT  NOT NULL                                                                       | 1-10                                                                                           |
+| status            | ENUM(NEW, ASSINGED, IN_PROGRESS,<br />COMPLETE, FAILED, CANCELLED),<br />DEFAULT NEW |                                                                                                |
 | risk_level        | ENUM(LOW, MEDIUM, HIGH, CRITICAL)                                                    | not from user,<br />auto calculation,<br />**difficulty \* 2 + importance = risk_level** |
-| assigned_agent_id | INT DEFAULT NULL                                                                     |                                                                                          |
+| assigned_agent_id | INT DEFAULT NULL                                                                     |                                                                                                |
 
 ### agents
 
@@ -193,28 +195,18 @@ return agent with the highest completed_missions.
 ## System flow
 
 - creating new agent.
-
 - Show all agents or agent by ID.
-
 - Updating agent info.
-
 - Deactivate agent.
-
 - Show agent performance.
-
 - Creating new mission.
-
 - Show all missions or mission by ID.
-
 - Assign mission to agent.
-
 - Updating missions status.
-
 - Show general report of the system.
-
 - Show report by status.
-
 - Show the top agent.
+
 ## Running Instructions
 
 1. create a docker container.
