@@ -14,8 +14,12 @@ intelligence-task-manager/
 │   ├── agent_db.py
 │   └── mission_db.py
 ├── utils/
-|   ├── exceptions.py
-|   ├── models.py
+│   ├── exceptions.py
+│   └── models.py
+├── routes/
+│    ├── agent_routes.py
+│    ├── mission_routes.py
+│    └── report_routes.py
 ├── README.md
 ├── requirements.txt
 └── .gitignore
@@ -152,6 +156,65 @@ return agent with the highest completed_missions.
 - mission can be cancelled only if the mission in status NEW \ ASSIGNED,
   else ERROR.
 
+## Endpoints list
+
+### Agents endpoints
+
+| Method | Endpoint                 | Description           |
+| ------ | ------------------------ | --------------------- |
+| POST   | /agents                  | creating new agent    |
+| GET    | /agents                  | get all agents        |
+| GET    | /agents/{id}             | get agent by ID       |
+| PUT    | /agents/{id}             | update agent info     |
+| PUT    | /agents/{id}/deactivate  | deactivate agent      |
+| GET    | /agents/{id}/performance | get agent performance |
+
+### Missions endpoints
+
+| Method | Endpoint                         | Description                 |
+| ------ | -------------------------------- | --------------------------- |
+| POST   | /missions                        | create new mission          |
+| GET    | /missions                        | get all missions            |
+| GET    | /missions/{id}                   | get mission by ID           |
+| PUT    | /missions/{id}/assign/{agent_id} | assign mission to agent     |
+| PUT    | /missions/{id}/start             | starting mission            |
+| PUT    | /missions/{id}/complete          | finish mission as completed |
+| PUT    | /missions/{id}/fail              | finish mission as failed    |
+| PUT    | /missions/{id}/cancel            | cancelling mission          |
+
+### Reports endpoints
+
+| Method | Endpiont                    | Description               |
+| ------ | --------------------------- | ------------------------- |
+| GET    | /reports/summary            | summary report            |
+| GET    | /reports/missions-by-status | report missions by status |
+| GET    | /reports/top-agent          | the top agent             |
+
+## System flow
+
+- creating new agent.
+
+- Show all agents or agent by ID.
+
+- Updating agent info.
+
+- Deactivate agent.
+
+- Show agent performance.
+
+- Creating new mission.
+
+- Show all missions or mission by ID.
+
+- Assign mission to agent.
+
+- Updating missions status.
+
+- Show general report of the system.
+
+- Show report by status.
+
+- Show the top agent.
 ## Running Instructions
 
 1. create a docker container.
@@ -167,7 +230,7 @@ docker run -d --name intelligence-mysql -e MYSQL_ROOT_PASSWORD=1234 \
 2. install packages.
 
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 3. Two options

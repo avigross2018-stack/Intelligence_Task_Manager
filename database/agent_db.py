@@ -3,14 +3,15 @@ from utils.models import CreateAgent
 from utils.exceptions import DataNotExist
 
 
+db = DBConnector()
+db.create_database()
+db.create_tables()
+
 class AgentDB:
 
-    db = DBConnector()
-    db.create_database()
-    db.create_tables()
-
+    
     def get_all_agents(self) -> list:
-        con = self.db.get_connection()
+        con = db.get_connection()
         cur = con.cursor(dictionary=True)
         cur.execute("""
             SELECT * FROM agents
@@ -22,27 +23,21 @@ class AgentDB:
 
 
     def create_agent(self, data: CreateAgent) -> dict:
-        con = self.db.get_connection()
+        con = db.get_connection()
         cur = con.cursor()
         cur.execute("""
-            INSERT INTO agents (name, specialty, is_active, completed_missions,
-                    failed_missions, agent_rank) VALUES (%s, %s, %s, %s, %s, %s)
-        """, (data.name, data.specialty, data.is_active, data.completed_missions, data.failed_missions, data.agent_rank))
+            INSERT INTO agents (name, specialty, agent_rank) VALUES (%s, %s, %s)
+        """, (data.name, data.specialty, data.agent_rank))
         con.commit()
         change = cur.rowcount > 0
         agent_id = cur.lastrowid
         cur.close()
         con.close()
-        if change > 0:
-            return {"message": "new agent created",
-                    "detail": {"id": agent_id, "name": data.name, "specialty": data.specialty,
-                               "is_active": data.is_active, "completed_missions": data.completed_missions,
-                               "failed_missions": data.completed_missions, "agent_rank": data.agent_rank}}
-        return {"message": "Failed to create new agent"}
+        return change
 
 
     def get_agent_by_id(self, agent_id: int) -> dict | None:
-        con = self.db.get_connection()
+        con = db.get_connection()
         cur = con.cursor(dictionary=True)
         cur.execute("""
             SELECT * FROM agents WHERE id = %s
@@ -60,20 +55,18 @@ class AgentDB:
         clean_keys = ", ".join(keys)
 
         sql = f"UPDATE agents SET {clean_keys} WHERE id = %s"
-        con = self.db.get_connection()
+        con = db.get_connection()
         cur = con.cursor()
         cur.execute(sql, tuple(values))
         con.commit()
         change = cur.rowcount > 0
         cur.close()
         con.close()
-        if change:
-            return {"message": f"agent {agent_id} updated."}
-        return {"message": f"agent {agent_id} is not updated."}
+        return change
 
 
     def deactivate_agent(self, agent_id: int) -> dict:
-        con = self.db.get_connection()
+        con = db.get_connection()
         cur = con.cursor(dictionary=True)
         cur.execute("""
             UPDATE agents SET is_active = FALSE WHERE id = %s
@@ -88,49 +81,39 @@ class AgentDB:
 
 
     def increment_completed(self, agent_id: int) -> dict:
-        con = self.db.get_connection()
+        con = db.get_connection()
         cur = con.cursor(dictionary=True)
         cur.execute("""
-            SELECT COUNT(*) AS total FROM missions WHERE status = 'COMPLETED'
-                     AND assigned_agent_id = %s
+            UPDATE agents SET completed_missions = completed_missions + 1
+                    WHERE id = %s
         """, (agent_id,))
-
-        data = cur.fetchone()
-
-        cur.execute('''
-                UPDATE agents SET completed_missions = %s WHERE id = %s
-            ''', tuple(data["total"], agent_id))
-        
         con.commit()
+        change = cur.rowcount > 0
         cur.close()
         con.close()
+        return change
 
 
     def increment_failed(self, agent_id: int) -> dict:
-        con = self.db.get_connection()
+        con = db.get_connection()
         cur = con.cursor(dictionary=True)
         cur.execute("""
-            SELECT COUNT(*) AS total FROM missions WHERE status = 'FAILED'
-                     AND assigned_agent_id = %s
+            UPDATE agents SET failed_missions = failed_missions + 1
+                    WHERE id = %s
         """, (agent_id,))
-
-        data = cur.fetchone()
-
-        cur.execute('''
-                UPDATE agents SET failed_missions = %s WHERE id = %s
-            ''', (data["total"], agent_id))
-        
         con.commit()
+        change = cur.rowcount > 0
         cur.close()
         con.close()
+        return change
 
 
     def get_agent_performance(self, agent_id: int) -> dict:
-        con = self.db.get_connection()
+        con = db.get_connection()
         cur = con.cursor(dictionary=True)
 
         cur.execute("""
-            SELECT COUNT(*) AS total FROM missions WHERE id = %s
+            SELECT COUNT(*) AS total FROM missions WHERE assigned_agent_id = %s
         """, (agent_id,))
         total = cur.fetchone()["total"]
 
@@ -160,7 +143,7 @@ class AgentDB:
 
 
     def count_active_agents(self) -> dict:
-        con = self.db.get_connection()
+        con = db.get_connection()
         cur = con.cursor(dictionary=True)
         cur.execute("""
             SELECT COUNT(*) AS amount_of_active_agents FROM agents WHERE is_active = TRUE
