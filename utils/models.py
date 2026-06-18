@@ -8,7 +8,7 @@ class CreateAgent(BaseModel):
     is_active:bool = True
     completed_missions:int = 0
     failed_missions:int = 0
-    agent_rank:Literal["Junior", "Senior", "Commander"]
+    agent_rank:str
 
 class UpdateAgent(BaseModel):
     name:str | None = None
