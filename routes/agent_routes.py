@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from utils.models import CreateAgent, UpdateAgent
 from database.agent_db import AgentDB
-from pydantic import error_wrappers
+
 
 
 router = APIRouter()
@@ -49,6 +49,7 @@ def get_agent_by_id(a_id: int):
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="ID not exist."
             )
+        return data
     except Exception:
         raise
 

@@ -23,9 +23,9 @@ class CreateMission(BaseModel):
     title:str
     description:str
     location:str
-    difficulty:int
-    importance:int
-    status:Literal['NEW', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETE', 'FAILED', 'CANCELLED'] = 'NEW'
+    difficulty:int = 1
+    importance:int = 1
+    status:str = 'NEW'
     assigned_agent_id:int | None = None
 
 class UpdateMission(BaseModel):
