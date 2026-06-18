@@ -257,9 +257,11 @@ def failed_mission(m_id: int):
             logger.info("Mission failed.")
             return [change_mission_status,
                     {"message": f"agent {assign_agent} increment failed mission"}]
-    
+
+
     except Exception:
         logger.error("Failed to failed mission.")
+        raise
 
 
 @router.put("/missions/{m_id}/cancel")
