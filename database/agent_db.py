@@ -78,7 +78,7 @@ class AgentDB:
         cur.close()
         con.close()
         if change:
-            return {"message": f"agent {agent_id} is deactivate."}
+            return {"message": f"agent {agent_id} deactivate."}
         return {"message": f"Failed to deactivate agent {agent_id}."}
 
 
@@ -140,7 +140,7 @@ class AgentDB:
             "total": total,
             "completed": completed,
             "failed": failed,
-            "success_rate": success_rate
+            "success_rate": f"{success_rate} %"
         }
 
 

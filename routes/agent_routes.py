@@ -85,4 +85,44 @@ def update_agent(a_id: int, data: UpdateAgent):
         raise
 
 
+
+@router.put("/agents/{a_id}/deactivate")
+def deactivate_agent(a_id: int):
+    try:
+        if type(a_id) != int:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Invalid ID."
+            )
+        
+        exist_id = agent.get_agent_by_id(a_id)
+        if exist_id is None:
+            raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="ID not fount."
+                )
+        return agent.deactivate_agent(a_id)
     
+    except Exception:
+        raise
+
+
+@router.get("/agents/{a_id}/performance")
+def agent_report(a_id: int):
+    try:
+        if type(a_id) != int:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Invalid ID."
+            )
+        
+        exist_id = agent.get_agent_by_id(a_id)
+        if exist_id is None:
+            raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="ID not fount."
+                )
+        return agent.get_agent_performance(a_id)
+    
+    except Exception:
+        raise
