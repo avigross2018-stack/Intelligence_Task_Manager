@@ -33,7 +33,9 @@ class AgentDB:
         agent_id = cur.lastrowid
         cur.close()
         con.close()
-        return change
+        if change:
+            return self.get_agent_by_id(agent_id)
+        return {"message": "Failed to create new agent"}
 
 
     def get_agent_by_id(self, agent_id: int) -> dict | None:
