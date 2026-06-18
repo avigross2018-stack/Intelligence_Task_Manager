@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from utils.models import CreateAgent
+from utils.models import CreateAgent, UpdateAgent
 from database.agent_db import AgentDB
 from pydantic import error_wrappers
 
@@ -38,6 +38,11 @@ def all_agents():
 @router.get("/agents/{a_id}")
 def get_agent_by_id(a_id: int):
     try:
+        if type(a_id) != int:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Invalid ID."
+            )
         data = agent.get_agent_by_id(a_id)
         if data is None:
             raise HTTPException(
@@ -48,3 +53,36 @@ def get_agent_by_id(a_id: int):
         raise
 
 
+@router.put("/agents/{a_id}")
+def update_agent(a_id: int, data: UpdateAgent):
+    try:
+        if type(a_id) != int:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Invalid ID."
+            )
+        
+        exist_id = agent.get_agent_by_id(a_id)
+        if exist_id is None:
+            raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="ID not fount."
+                )
+        
+        data_dict = data.model_dump(exclude_unset=True)
+        if not data_dict:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="empty data"
+            )
+        
+        success = agent.update_agent(a_id, data_dict)
+        if success:
+            return {"message": f"agent {a_id} updated."}
+        return {"message": f"agent {a_id} not updated."}
+    
+    except Exception:
+        raise
+
+
+    
