@@ -103,7 +103,7 @@ class MissionDB:
         cur.execute("""
             SELECT COUNT(*) AS total_missions FROM missions
         """)
-        data = cur.fetchone()
+        data = cur.fetchone()["total_missions"]
         cur.close()
         con.close()
         return data
@@ -115,7 +115,7 @@ class MissionDB:
         cur.execute("""
             SELECT COUNT(*) AS status_count FROM missions WHERE status = %s
         """, (status,))
-        data = cur.fetchone()
+        data = cur.fetchone()["status_count"]
         cur.close()
         con.close()
         return data
@@ -128,7 +128,7 @@ class MissionDB:
             SELECT COUNT(*) AS open_missions FROM missions 
                     WHERE status = 'ASSIGNED' OR status = 'IN_PROGRESS'
         """)
-        data = cur.fetchone()
+        data = cur.fetchone()["open_missions"]
         cur.close()
         con.close()
         return data
@@ -140,7 +140,7 @@ class MissionDB:
         cur.execute("""
             SELECT COUNT(*) AS critical_missions FROM missions WHERE risk_level = 'CRITICAL'
         """)
-        data = cur.fetchone()
+        data = cur.fetchone()["critical_missions"]
         cur.close()
         con.close()
         return data

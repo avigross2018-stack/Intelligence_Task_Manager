@@ -115,11 +115,6 @@ class AgentDB:
         cur = con.cursor(dictionary=True)
 
         cur.execute("""
-            SELECT COUNT(*) AS total FROM missions WHERE assigned_agent_id = %s
-        """, (agent_id,))
-        total = cur.fetchone()["total"]
-
-        cur.execute("""
             SELECT completed_missions FROM agents WHERE id = %s 
         """, (agent_id,))
         completed = cur.fetchone()["completed_missions"]
@@ -129,6 +124,8 @@ class AgentDB:
         """, (agent_id,))
         failed = cur.fetchone()["failed_missions"]
         
+        total = completed + failed
+
         try:
             success_rate = 100 / total * completed
         except ZeroDivisionError:
@@ -150,7 +147,7 @@ class AgentDB:
         cur.execute("""
             SELECT COUNT(*) AS amount_of_active_agents FROM agents WHERE is_active = TRUE
         """)
-        data = cur.fetchone()
+        data = cur.fetchone()["amount_of_active_agents"]
         cur.close()
         con.close()
         return data

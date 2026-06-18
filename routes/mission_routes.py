@@ -62,6 +62,7 @@ def mission_by_id(m_id: int):
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="ID not exist."
             )
+        return data
     except Exception:
         raise
 
@@ -212,7 +213,7 @@ def failed_mission(m_id: int):
         increment_agent = agent.increment_failed(assign_agent)
         if increment_agent:
             return [change_mission_status,
-                    {"message": f"agent {assign_agent} increment complete mission"}]
+                    {"message": f"agent {assign_agent} increment failed mission"}]
     
     except Exception:
         raise
