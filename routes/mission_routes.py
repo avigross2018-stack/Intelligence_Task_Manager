@@ -78,6 +78,7 @@ def assign_mission(m_id: int, a_id:int):
         the_mission = mission.get_mission_by_id(m_id)
         the_agent = agent.get_agent_by_id(a_id)
         open_missions = mission.get_open_missions_by_agent(a_id)
+
         if the_mission is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -133,6 +134,7 @@ def assign_mission(m_id: int, a_id:int):
 def start_mission(m_id: int):
     try:
         the_mission = mission.get_mission_by_id(m_id)
+
         if the_mission is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -161,6 +163,7 @@ def complete_mission(m_id: int):
 
         the_mission = mission.get_mission_by_id(m_id)
         assign_agent = the_mission["assigned_agent_id"]
+
         if the_mission is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -193,6 +196,7 @@ def failed_mission(m_id: int):
 
         the_mission = mission.get_mission_by_id(m_id)
         assign_agent = the_mission["assigned_agent_id"]
+
         if the_mission is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -216,4 +220,28 @@ def failed_mission(m_id: int):
 
 @router.put("/missions/{m_id}/cancel")
 def cancel_mission(m_id: int):
-    pass
+    try:
+        if type(m_id) != int or type(m_id) != int:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Invalid ID."
+            )
+        the_mission = mission.get_mission_by_id(m_id)
+
+        if the_mission is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Mission not fount")
+        
+        if the_mission["status"] != "NEW" and the_mission["status"] != "ASSIGNED":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="cannot cancel mission with a status not NEW or ASSIGNED"
+            )
+        
+        change_mission_status = mission.update_mission_status(m_id, "CANCELLED")
+        if change_mission_status:
+            return {"message": f"mission {m_id} cancelled."}
+    
+    except Exception:
+        raise 
