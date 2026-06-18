@@ -1,13 +1,14 @@
 from fastapi import APIRouter, HTTPException, status
 from database.mission_db import MissionDB
 from database.agent_db import AgentDB
-
+from logger import get_logger
 
 
 router = APIRouter()
 
 mission = MissionDB()
 agent = AgentDB()
+logger = get_logger()
 
 
 @router.get("/reports/summary")
