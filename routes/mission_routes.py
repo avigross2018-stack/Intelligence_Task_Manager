@@ -131,17 +131,87 @@ def assign_mission(m_id: int, a_id:int):
 
 @router.put("/missions/{m_id}/start")
 def start_mission(m_id: int):
-    pass
+    try:
+        the_mission = mission.get_mission_by_id(m_id)
+        if the_mission is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Mission not fount")
+        
+        if the_mission["status"] != "ASSIGNED":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="cannot start mission with a status not ASSIGNED"
+            )
+        
+        change_mission_status = mission.update_mission_status(m_id, "IN_PROGRESS")
+        return change_mission_status
+    except Exception:
+        raise
 
 
 @router.put("/missions/{m_id}/complete")
 def complete_mission(m_id: int):
-    pass
+    try:
+        if type(m_id) != int or type(m_id) != int:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Invalid ID."
+            )
+
+        the_mission = mission.get_mission_by_id(m_id)
+        assign_agent = the_mission["assigned_agent_id"]
+        if the_mission is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Mission not fount")
+        
+        if the_mission["status"] != "IN_PROGRESS":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="cannot complete mission with a status not IN_PROGRESS"
+            )
+        
+        change_mission_status = mission.update_mission_status(m_id, "COMPLETED")
+        increment_agent = agent.increment_completed(assign_agent)
+        if increment_agent:
+            return [change_mission_status,
+                    {"message": f"agent {assign_agent} increment complete mission"}]
+    
+    except Exception:
+        raise
 
 
 @router.put("/missions/{m_id}/fail")
 def failed_mission(m_id: int):
-    pass
+    try:
+        if type(m_id) != int or type(m_id) != int:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Invalid ID."
+            )
+
+        the_mission = mission.get_mission_by_id(m_id)
+        assign_agent = the_mission["assigned_agent_id"]
+        if the_mission is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Mission not fount")
+        
+        if the_mission["status"] != "IN_PROGRESS":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="cannot failed mission with a status not IN_PROGRESS"
+            )
+        
+        change_mission_status = mission.update_mission_status(m_id, "FAILED")
+        increment_agent = agent.increment_failed(assign_agent)
+        if increment_agent:
+            return [change_mission_status,
+                    {"message": f"agent {assign_agent} increment complete mission"}]
+    
+    except Exception:
+        raise
 
 
 @router.put("/missions/{m_id}/cancel")
